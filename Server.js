@@ -1,9 +1,17 @@
 var http = require('http');
 var io = require('socket.io');
+var fs = require('fs');
 
 var server = http.createServer(function(req, res) {
-  res.writeHead(200);
-  res.end('Hello Http');
+  fs.readFile(__dirname + "/wall.html", function (err,data) {
+    if (err) {
+      res.writeHead(404);
+      res.end(JSON.stringify(err));
+      return;
+    }
+    res.writeHead(200);
+    res.end(data);
+  });
 });
 server.listen(8090);
 
