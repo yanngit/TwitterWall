@@ -16,16 +16,9 @@ var server = http.createServer(function(req, res) {
 server.listen(8090);
 
 // socket.io 
-var socket = io.listen(server); 
-socket.on('connection', function(client){ 
-    // new client is here! 
-    client.on('message', function(){ 
-        console.log('message arrive');
-        client.send('some message');
-    });
-
-    client.on('disconnect', function(){
-        console.log('connection closed');
-    });
-
+io.listen(server).on('connection', function(client){
+	client.on('message', function (msg) {
+		console.log('Message Received: ', msg);
+		socket.broadcast.emit('message', msg);
+	});
 });
