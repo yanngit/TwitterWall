@@ -3,20 +3,32 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
+		<style type="text/css">
+			.circle {
+				width: 200px;
+				height: 200px;
+				background-color: red;
+				border-radius: 50%;
+				overflow: hidden;
+			}
+		</style>
 	</head>
 	<body ng-app="wall">
 		<div ng-controller="wallCtrl">
 			<div class="circle" ng-repeat="tweet in tweets">
+				{{tweet.text}}
 			</div>
 		</div>
 		<script>
 			var wall = angular.module("wall", []);
-
+			
 			wall.controller('wallCtrl', function($scope) {
+				$scope.tweets = [];
 				var socket = io.connect();
 
 				socket.on('tweets', function(data){
 					console.log(data); 
+					$scope.$apply(function() { $scope.tweets = $scope.tweets.concat(data); });
 				});
 			});
 		</script>

@@ -32,19 +32,23 @@ var job = new cronJob('*/10 * * * * *', function(){
 	console.log("GET TWEETS");
 	var params = {screen_name: "nuitdelinfo2013", count: 2};
 	if(tweets.length > 0) {
-		params["since_id"] = tweets[tweets.length].id;
+		params["since_id"] = tweets[0].id;
 	}
 
 	t.get("statuses/user_timeline", params, function(page, error, status) {
 		console.log(page);
 		if(page.length > 0) {
+			var newTweets = [];
 			page.forEach(function(tweet) {
-				tweets.push({id: tweet.id, text: tweet.text, user: tweet.user.screen_name});
+				if(tweets.length == 0 || tweet.id !== tweets[0].id) {
+					newTweets.push({id: tweet.id, text: tweet.text, user: tweet.user.screen_name});
+				}
 			});
 			
 			clients.forEach(function(client) {
-				client.emit("tweets", tweets);
+				client.emit("tweets", newTweets);
 			});
+			tweets = tweets.concat(newTweets);
 		}
 	});
   }, function () {
@@ -55,4 +59,5 @@ var job = new cronJob('*/10 * * * * *', function(){
 // socket.io 
 io.listen(server).on('connection', function(client){
 	clients.push(client);
+	client.emit("tweets", tweets);
 });
