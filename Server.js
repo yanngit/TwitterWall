@@ -32,7 +32,7 @@ var job = new cronJob('*/10 * * * * *', function(){
 	console.log("GET TWEETS");
 	var params = {screen_name: "nuitdelinfo2013", count: 2};
 	if(tweets.length > 0) {
-		params["since_id"] = tweets[0].id;
+		params["since_id"] = tweets[tweets.length].id;
 	}
 
 	t.get("statuses/user_timeline", params, function(page, error, status) {

@@ -1,24 +1,24 @@
 <html>
-<head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-<script src="/socket.io/socket.io.js"></script> 
-<script> 
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.3/angular.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body ng-app="wall">
+		<div ng-controller="wallCtrl">
+			<div class="circle" ng-repeat="tweet in tweets">
+			</div>
+		</div>
+		<script>
+			var wall = angular.module("wall", []);
 
-function fun()
-{
-    var socket = io.connect();
+			wall.controller('wallCtrl', function($scope) {
+				var socket = io.connect();
 
-    socket.on('tweets', function(data){
-        console.log(data); 
-    });
-}
-
-$(document).ready(function() {
-    fun();
-});
-</script> 
-</head>
-<body>
-	Test
-</body>
+				socket.on('tweets', function(data){
+					console.log(data); 
+				});
+			});
+		</script>
+	</body>
 </html>
