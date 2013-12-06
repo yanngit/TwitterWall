@@ -8,8 +8,8 @@ function fun()
 {
     var socket = io.connect();
 
-    socket.on('tweet', function(){
-        console.log('tweet'); 
+    socket.on('tweets', function(data){
+        console.log(data); 
     });
 }
 

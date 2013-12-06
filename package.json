@@ -8,6 +8,7 @@
   },
   "dependencies": {
 	"socket.io": ">=0.9",
-	"node-twitter-api": ""
+	"twitter-api": "~1.0.4",
+	"cron": ""
   }
 }

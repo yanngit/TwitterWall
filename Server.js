@@ -1,7 +1,8 @@
 var http = require('http');
 var io = require('socket.io');
 var fs = require('fs');
-var twitterAPI = require('node-twitter-api');
+var twitterAPI = require('twitter-api');
+var cronJob = require('cron').CronJob;
 
 var server = http.createServer(function(req, res) {
   fs.readFile(__dirname + "/wall.html", function (err,data) {
@@ -16,46 +17,42 @@ var server = http.createServer(function(req, res) {
 });
 server.listen(8090);
 
-var  twitter = new twitterAPI({
-    consumerKey: 's7Olfe8DUZlSS5dOs9iLA',
-    consumerSecret: '0NpbgawetQSld2UKau3pHIWUPnzt3NID2c2HeWKL48',
-    callback: 'http://yoururl.tld/something'
-});
+var tweets = [];
+var clients = [];
 
-var accessToken = "478651459-7BNXdRnGq2buiMLLjxkF11iqRdVDqZ5ANhgw3HRM";
-var accessTokenSecret = "tXC81Y316cH1uTa4wkTBEhxWXAbYxcKHowuFs7CzLD6Hx";
-
-twitter.statuses("user_timeline", {
-		screen_name: "nuitdelinfo2013",
-		count: 20
-	},
-	accessToken,
-	accessTokenSecret,
-	function(error, data, response) {
-	console.log("iiiiiiiiiiiii");
-		if (error) {
-			console.log(error);
-		} else {
-			console.log(data);
-		}
-	}
+var t = twitterAPI.createClient();
+t.setAuth(
+	's7Olfe8DUZlSS5dOs9iLA',
+	'0NpbgawetQSld2UKau3pHIWUPnzt3NID2c2HeWKL48',
+    '478651459-7BNXdRnGq2buiMLLjxkF11iqRdVDqZ5ANhgw3HRM',
+    'tXC81Y316cH1uTa4wkTBEhxWXAbYxcKHowuFs7CzLD6Hx'
 );
 
-twitter.statuses("update", {
-        status: "Hello world!"
-    },
-    accessToken,
-    accessTokenSecret,
-    function(error, data, response) {
-        if (error) {
-            // something went wrong
-        } else {
-            // data contains the data sent by twitter
-        }
-    }
+var job = new cronJob('*/10 * * * * *', function(){
+	console.log("GET TWEETS");
+	var params = {screen_name: "nuitdelinfo2013", count: 2};
+	if(tweets.length > 0) {
+		params["since_id"] = tweets[0].id;
+	}
+
+	t.get("statuses/user_timeline", params, function(page, error, status) {
+		console.log(page);
+		if(page.length > 0) {
+			page.forEach(function(tweet) {
+				tweets.push({id: tweet.id, text: tweet.text, user: tweet.user.screen_name});
+			});
+			
+			clients.forEach(function(client) {
+				client.emit("tweets", tweets);
+			});
+		}
+	});
+  }, function () {
+  },
+  true
 );
 
 // socket.io 
 io.listen(server).on('connection', function(client){
-	client.emit("tweet", {"test" : "test"});
+	clients.push(client);
 });
