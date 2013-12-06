@@ -8,19 +8,21 @@
 			.circle {
 				-webkit-animation: tada 1s linear;
 				animation: tada 1s linear;
-				width: 200px;
-				height: 200px;
+				/*width: 200px;
+				height: 200px;*/
 				background-color: red;
-				border-radius: 50%;
+				/*border-radius: 50%;*/
 				overflow: hidden;
+				display: inline;
 			}
+			
 			
 			@-webkit-keyframes tada{0%{-webkit-transform:scale(1);transform:scale(1)}10%,20%{-webkit-transform:scale(.9)rotate(-3deg);transform:scale(.9)rotate(-3deg)}30%,50%,70%,90%{-webkit-transform:scale(1.1)rotate(3deg);transform:scale(1.1)rotate(3deg)}40%,60%,80%{-webkit-transform:scale(1.1)rotate(-3deg);transform:scale(1.1)rotate(-3deg)}100%{-webkit-transform:scale(1)rotate(0);transform:scale(1)rotate(0)}}@keyframes tada{0%{-webkit-transform:scale(1);-ms-transform:scale(1);transform:scale(1)}10%,20%{-webkit-transform:scale(.9)rotate(-3deg);-ms-transform:scale(.9)rotate(-3deg);transform:scale(.9)rotate(-3deg)}30%,50%,70%,90%{-webkit-transform:scale(1.1)rotate(3deg);-ms-transform:scale(1.1)rotate(3deg);transform:scale(1.1)rotate(3deg)}40%,60%,80%{-webkit-transform:scale(1.1)rotate(-3deg);-ms-transform:scale(1.1)rotate(-3deg);transform:scale(1.1)rotate(-3deg)}100%{-webkit-transform:scale(1)rotate(0);-ms-transform:scale(1)rotate(0);transform:scale(1)rotate(0)}}
 		</style>
 	</head>
 	<body ng-app="wall">
 		<div ng-controller="wallCtrl">
-			<div class="circle" ng-repeat="tweet in tweets">
+			<div class="circle" ng-repeat="tweet in tweets" style="height : {{tweet.poids * 5}}px; width : {{tweet.poids * 5}}px;">
 				{{tweet.text}}
 			</div>
 		</div>
@@ -33,7 +35,7 @@
 
 				socket.on('tweets', function(data){
 					console.log(data); 
-					$scope.$apply(function() { $scope.tweets = $scope.tweets.concat(data); });
+					$scope.$apply(function() { $scope.tweets = data.concat($scope.tweets); });
 				});
 			});
 		</script>
