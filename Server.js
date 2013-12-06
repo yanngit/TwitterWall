@@ -30,25 +30,27 @@ t.setAuth(
 
 var job = new cronJob('*/10 * * * * *', function(){
 	console.log("GET TWEETS");
-	var params = {screen_name: "nuitdelinfo2013", count: 2};
+	var params = {q: "#nuitdelinfo2013", count: 2};
 	if(tweets.length > 0) {
 		params["since_id"] = tweets[0].id;
 	}
 
-	t.get("statuses/user_timeline", params, function(page, error, status) {
-		console.log(page);
-		if(page.length > 0) {
+	t.get("search/tweets", params, function(page, error, status) {
+		var tweetsReceived = page.statuses;
+		if(tweetsReceived.length > 0) {
 			var newTweets = [];
-			page.forEach(function(tweet) {
+			var nbNew = tweetsReceived.length -1;
+			for(var i = nbNew; i >= 0; i--) {
+				var tweet = tweetsReceived[i];
 				if(tweets.length == 0 || tweet.id !== tweets[0].id) {
-					newTweets.push({id: tweet.id, text: tweet.text, user: tweet.user.screen_name});
+					newTweets.unshift({id: tweet.id, text: tweet.text, user: tweet.user.screen_name});
 				}
-			});
+			}
 			
 			clients.forEach(function(client) {
 				client.emit("tweets", newTweets);
 			});
-			tweets = tweets.concat(newTweets);
+			tweets = newTweets.concat(tweets);
 		}
 	});
   }, function () {
